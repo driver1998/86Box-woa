@@ -1,0 +1,30 @@
+diff --git a/configure.ac b/configure.ac
+index 9e782c6..bb9fb20 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3002,6 +3002,9 @@ XINPUT_STATE_EX s1;
+             *-*-cygwin*)
+             have_dinput=false
+             ;;
++            aarch64-*-mingw* | armv7-*-mingw*)
++            have_dinput=false
++            ;;
+         esac
+     fi
+ 
+diff --git a/include/SDL_cpuinfo.h b/include/SDL_cpuinfo.h
+index 296df01..dd371f8 100644
+--- a/include/SDL_cpuinfo.h
++++ b/include/SDL_cpuinfo.h
+@@ -57,6 +57,11 @@
+ #endif /* __clang__ */
+ #elif defined(__MINGW64_VERSION_MAJOR)
+ #include <intrin.h>
++#if !defined(SDL_DISABLE_ARM_NEON_H)
++#  if defined(__ARM_NEON)
++#    include <arm_neon.h>
++#  endif
++#endif
+ #else
+ /* altivec.h redefining bool causes a number of problems, see bugs 3993 and 4392, so you need to explicitly define SDL_ENABLE_ALTIVEC_H to have it included. */
+ #if defined(HAVE_ALTIVEC_H) && defined(__ALTIVEC__) && !defined(__APPLE_ALTIVEC__) && defined(SDL_ENABLE_ALTIVEC_H)

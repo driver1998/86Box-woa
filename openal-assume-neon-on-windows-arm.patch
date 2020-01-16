@@ -1,0 +1,23 @@
+diff --git a/alc/helpers.cpp b/alc/helpers.cpp
+index 4ea94c7..e311d05 100644
+--- a/alc/helpers.cpp
++++ b/alc/helpers.cpp
+@@ -161,6 +161,10 @@ void FillCPUCaps(int capfilter)
+ #endif
+ #endif
+ #ifdef HAVE_NEON
++#ifdef WIN32
++#warning "Assuming NEON run-time support!"
++    caps |= CPU_CAP_NEON;
++#else
+     al::ifstream file{"/proc/cpuinfo"};
+     if(!file.is_open())
+         ERR("Failed to open /proc/cpuinfo, cannot check for NEON support\n");
+@@ -193,6 +197,7 @@ void FillCPUCaps(int capfilter)
+             }
+         }
+     }
++#endif
+ #endif
+ 
+     TRACE("Extensions:%s%s%s%s%s%s\n",

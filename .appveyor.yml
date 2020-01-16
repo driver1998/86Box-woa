@@ -1,0 +1,26 @@
+image: Ubuntu1804
+
+skip_non_tags: true
+
+environment:
+  matrix:
+    - ARCH: i686
+    - ARCH: aarch64
+  
+install:
+  - sh: |-
+      curl  -o llvm-mingw.tar.xz    -L https://github.com/mstorsjo/llvm-mingw/releases/download/20190920/llvm-mingw-20190920-ubuntu-16.04.tar.xz
+      tar -xJf llvm-mingw.tar.xz    || exit 1
+      curl  -o sdl.tar.gz           -L https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
+      tar -xzf sdl.tar.gz           || exit 1
+      curl  -o zlib.tar.xz          -L https://www.zlib.net/zlib-1.2.11.tar.xz
+      tar -xJf zlib.tar.xz          || exit 1
+      curl  -o openal-soft.tar.bz2  -L https://kcat.strangesoft.net/openal-releases/openal-soft-1.20.0.tar.bz2
+      tar -xjf openal-soft.tar.bz2  || exit 1
+      curl  -o freetype.tar.xz      -L https://download.savannah.gnu.org/releases/freetype/freetype-2.10.1.tar.xz
+      tar -xJf freetype.tar.xz
+      sudo apt-get update -qq
+      chmod +x build.sh
+      
+build_script:
+  sh: ./build.sh
