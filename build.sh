@@ -42,7 +42,7 @@ make -f win32/Makefile.gcc install SHARED_MODE=1 \
 cd ..
 
 # SDL2
-cd $(find SDL-release-* -type d | head -n 1)
+cd $(find SDL2-* -type d | head -n 1)
 patch -p1 < ../sdl2-fix-arm-build.patch
 aclocal
 autoconf
