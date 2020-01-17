@@ -15,7 +15,7 @@ echo Building for $HOST
 # $1 : The lib filename, in MinGW convention
 #      xyz.dll -> libxyz.a
 function build_lib() {
-    if [ $ARCH == "i686" ]; then return; fi
+    if [ $ARCH == "i686" ] || [ $ARCH == 'x86_64' ]; then return; fi
     LIBFILE=$1
     MODULE=$(echo $LIBFILE | sed 's/lib\(.*\?\)\.a/\1/g')
     DLLFILE=$(echo $MODULE | tr '/a-z/' '/A-Z/').dll
@@ -41,9 +41,16 @@ make -f win32/Makefile.gcc install SHARED_MODE=1 \
      LIBRARY_PATH=$PREFIX/lib || exit 1
 cd ..
 
+# libpng
+cd $(find libpng-* -type d | head -n 1)
+./configure --prefix=$PREFIX --host=$HOST || exit 1
+make -j $(nproc) || exit 1
+make install     || exit 1
+cd ..
+
 # SDL2
 cd $(find SDL2-* -type d | head -n 1)
-patch -p1 < ../sdl2-fix-arm-build.patch
+patch -p1 < ../patches/sdl2-fix-arm-build.patch
 aclocal
 autoconf
 ./configure --prefix=$PREFIX --host=$HOST --disable-video-opengl || exit 1
@@ -53,7 +60,7 @@ cd ..
 
 # openal-soft
 cd $(find openal-soft-* -type d | head -n 1)
-patch -p1 < ../openal-assume-neon-on-windows-arm.patch
+patch -p1 < ../patches/openal-assume-neon-on-windows-arm.patch
 sed -i "s/\/usr\/\${HOST}/$(echo $PREFIX | sed 's/\//\\\//g')/g" XCompile.txt
 cmake . -DCMAKE_TOOLCHAIN_FILE=XCompile.txt -DHOST=$HOST \
         -DDSOUND_LIBRARY=$MINGW_ROOT/$HOST/lib \
@@ -71,3 +78,28 @@ cd $(find freetype-* -type d | head -n 1)
 make -j $(nproc) || exit 1
 make install     || exit 1
 cd ..
+
+# Ghostscript headers
+cd $(find ghostscript-* -type d | head -n 1)
+mkdir $PREFIX/include/ghostscript
+cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
+cd ..
+
+# Winpcap headers
+cd WpdPack/Include
+cp -R *.* $PREFIX/include
+cd ..
+
+# 86Box
+cd 86Box
+for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
+cd src
+if [ $ARCH == "i686"    ]; then 86BOX_ARGS=                   ; fi
+if [ $ARCH == "x86_64"  ]; then 86BOX_ARGS="X64=y"            ; fi
+if [ $ARCH == "armv7"   ]; then 86BOX_ARGS="ARM=y   XINPUT=y" ; fi
+if [ $ARCH == "aarch64" ]; then 86BOX_ARGS="ARM64=y XINPUT=y" ; fi
+make -f win/Makefile_ndr.mingw $86BOX_ARGS -j $(nproc)
+cp 86Box.exe pcap_if.exe $PREFIX/bin
+cd ../../
+
+find $PREFIX/bin

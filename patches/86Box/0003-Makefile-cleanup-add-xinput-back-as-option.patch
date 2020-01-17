@@ -1,0 +1,194 @@
+From 1da02ffd745f3b46185f6bb4fa0a80a9d78b42e4 Mon Sep 17 00:00:00 2001
+From: GH Cao <driver1998@foxmail.com>
+Date: Fri, 17 Jan 2020 16:11:02 +0800
+Subject: [PATCH 3/4] Makefile cleanup, add xinput back as option
+
+---
+ src/win/Makefile.mingw     | 30 +++++++++++++++++-------------
+ src/win/Makefile_ndr.mingw | 32 ++++++++++++++++++--------------
+ 2 files changed, 35 insertions(+), 27 deletions(-)
+
+diff --git a/src/win/Makefile.mingw b/src/win/Makefile.mingw
+index a2f5b332..0a37bbf2 100644
+--- a/src/win/Makefile.mingw
++++ b/src/win/Makefile.mingw
+@@ -189,8 +189,8 @@ endif
+ ifndef RDP
+ RDP		:= n
+ endif
+-ifndef DINPUT
+- DINPUT		:= n
++ifndef XINPUT
++ XINPUT		:= n
+ endif
+ ifndef OPENAL
+ OPENAL		:= y
+@@ -431,10 +431,6 @@ RDPLIB		+= -lrdp
+ RDPOBJ		:= rdp.o
+ endif
+ 
+-ifeq ($(DINPUT), y)
+-OPTS		+= -DUSE_DINPUT
+-endif
+-
+ ifeq ($(DISCORD), y)
+ OPTS		+= -DUSE_DISCORD
+ RFLAGS		+= -DUSE_DISCORD
+@@ -533,7 +529,7 @@ CFLAGS		:= $(WX_FLAGS) $(OPTS) $(DFLAGS) $(COPTIM) $(AOPTIM) \
+ 		   -fno-strict-aliasing -funroll-loops
+ 
+ # Add freetyp2 references through pkgconfig
+-CFLAGS          := $(CFLAGS)  `pkg-config.exe --cflags freetype2`
++CFLAGS          := $(CFLAGS)  `pkg-config --cflags freetype2`
+ 
+ CXXFLAGS	:= $(CFLAGS)
+ 
+@@ -692,7 +688,13 @@ PLATOBJ		:= win.o \
+ 		    win_dynld.o win_thread.o \
+ 		    win_cdrom.o win_keyboard.o \
+ 		    win_midi.o \
+-		    win_mouse.o win_joystick.o
++		    win_mouse.o
++
++ifeq ($(XINPUT), y)
++ PLATOBJ	+= win_joystick_xinput.o
++else
++ PLATOBJ	+= win_joystick.o
++endif
+ 
+ OBJ		:= $(MAINOBJ) $(INTELOBJ) $(CPUOBJ) $(CHIPSETOBJ) $(MCHOBJ) \
+ 		   $(DEVOBJ) $(FDDOBJ) $(CDROMOBJ) $(ZIPOBJ) $(HDDOBJ) \
+@@ -718,12 +720,14 @@ endif
+ ifneq ($(WX), n)
+ LIBS		+= $(WX_LIBS) -lm
+ endif
+-LIBS		+= -lpng -lz -lwsock32 -liphlpapi -ldinput8 -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++ 
++LIBS		+= -lpng -lz -lwsock32 -liphlpapi -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++ 
+ ifneq ($(X64), y)
+ LIBS		+= -Wl,--large-address-aware
+ endif
+-ifneq ($(DINPUT), y)
+- LIBS    += -lxinput
++ifeq ($(XINPUT), y)
++ LIBS		+= -lxinput
++else
++ LIBS		+= -ldinput8
+ endif
+ 
+ LIBS    += -static
+@@ -777,7 +781,7 @@ all:		$(PROG).exe pcap_if.exe
+ 
+ $(PROG).exe:	$(OBJ) 86Box.res
+ 		@echo Linking $(PROG).exe ..
+-		@$(CC) -o $(PROG).exe $(OBJ) 86Box.res $(LIBS)
++		@$(CC) $(LDFLAGS) -o $(PROG).exe $(OBJ) 86Box.res $(LIBS)
+ ifneq ($(DEBUG), y)
+ 		@$(STRIP) $(PROG).exe
+ endif
+@@ -788,7 +792,7 @@ pcap_if.res:	pcap_if.rc
+ 
+ pcap_if.exe:	pcap_if.o win_dynld.o pcap_if.res
+ 		@echo Linking pcap_if.exe ..
+-		@$(CC) -o pcap_if.exe pcap_if.o win_dynld.o pcap_if.res
++		@$(CC) $(LDFLAGS) -o pcap_if.exe pcap_if.o win_dynld.o pcap_if.res
+ ifneq ($(DEBUG), y)
+ 		@$(STRIP) pcap_if.exe
+ endif
+diff --git a/src/win/Makefile_ndr.mingw b/src/win/Makefile_ndr.mingw
+index fee58bd0..6facd8cf 100644
+--- a/src/win/Makefile_ndr.mingw
++++ b/src/win/Makefile_ndr.mingw
+@@ -189,8 +189,8 @@ endif
+ ifndef RDP
+ RDP		:= n
+ endif
+-ifndef DINPUT
+- DINPUT		:= n
++ifndef XINPUT
++ XINPUT		:= n
+ endif
+ ifndef OPENAL
+ OPENAL		:= y
+@@ -437,10 +437,6 @@ RDPLIB		+= -lrdp
+ RDPOBJ		:= rdp.o
+ endif
+ 
+-ifeq ($(DINPUT), y)
+-OPTS		+= -DUSE_DINPUT
+-endif
+-
+ ifeq ($(DISCORD), y)
+ OPTS		+= -DUSE_DISCORD
+ RFLAGS		+= -DUSE_DISCORD
+@@ -539,7 +535,7 @@ CFLAGS		:= $(WX_FLAGS) $(OPTS) $(DFLAGS) $(COPTIM) $(AOPTIM) \
+ 		   -fno-strict-aliasing -funroll-loops
+ 
+ # Add freetyp2 references through pkgconfig
+-CFLAGS          := $(CFLAGS)  `pkg-config.exe --cflags freetype2`
++CFLAGS          := $(CFLAGS)  `pkg-config --cflags freetype2`
+ 
+ CXXFLAGS	:= $(CFLAGS)
+ 
+@@ -636,7 +632,7 @@ NETOBJ		:= network.o \
+ 
+ PRINTOBJ	:= png.o prt_cpmap.o \
+ 		    prt_escp.o prt_text.o prt_ps.o
+-			
++
+ SNDOBJ		:= sound.o \
+ 		    openal.o \
+ 		    snd_opl.o snd_opl_backend.o \
+@@ -698,7 +694,13 @@ PLATOBJ		:= win.o \
+ 		    win_dynld.o win_thread.o \
+ 		    win_cdrom.o win_keyboard.o \
+ 		    win_midi.o \
+-		    win_mouse.o win_joystick.o
++		    win_mouse.o
++
++ifeq ($(XINPUT), y)
++ PLATOBJ	+= win_joystick_xinput.o
++else
++ PLATOBJ	+= win_joystick.o
++endif
+ 
+ OBJ		:= $(MAINOBJ) $(INTELOBJ) $(CPUOBJ) $(CHIPSETOBJ) $(MCHOBJ) \
+ 		   $(DEVOBJ) $(FDDOBJ) $(CDROMOBJ) $(ZIPOBJ) $(HDDOBJ) \
+@@ -724,12 +726,14 @@ endif
+ ifneq ($(WX), n)
+ LIBS		+= $(WX_LIBS) -lm
+ endif
+-LIBS		+= -lpng -lz -lwsock32 -liphlpapi -ldinput8 -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++ 
++LIBS		+= -lpng -lz -lwsock32 -liphlpapi -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++ 
+ ifneq ($(X64), y)
+ LIBS		+= -Wl,--large-address-aware
+ endif
+-ifneq ($(DINPUT), y)
+- LIBS    += -lxinput
++ifeq ($(XINPUT), y)
++ LIBS		+= -lxinput
++else
++ LIBS		+= -ldinput8
+ endif
+ 
+ LIBS    += -static
+@@ -783,7 +787,7 @@ all:		$(PROG).exe pcap_if.exe
+ 
+ $(PROG).exe:	$(OBJ) 86Box.res
+ 		@echo Linking $(PROG).exe ..
+-		@$(CC) -o $(PROG).exe $(OBJ) 86Box.res $(LIBS)
++		@$(CC) $(LDFLAGS) -o $(PROG).exe $(OBJ) 86Box.res $(LIBS)
+ ifneq ($(DEBUG), y)
+ 		@$(STRIP) $(PROG).exe
+ endif
+@@ -794,7 +798,7 @@ pcap_if.res:	pcap_if.rc
+ 
+ pcap_if.exe:	pcap_if.o win_dynld.o pcap_if.res
+ 		@echo Linking pcap_if.exe ..
+-		@$(CC) -o pcap_if.exe pcap_if.o win_dynld.o pcap_if.res
++		@$(CC) $(LDFLAGS) -o pcap_if.exe pcap_if.o win_dynld.o pcap_if.res
+ ifneq ($(DEBUG), y)
+ 		@$(STRIP) pcap_if.exe
+ endif
+-- 
+2.17.1
+

@@ -1,0 +1,88 @@
+From 6712b8369fbef8a1d262ce2ff06eca2f058eea5f Mon Sep 17 00:00:00 2001
+From: GH Cao <driver1998@foxmail.com>
+Date: Fri, 17 Jan 2020 16:12:34 +0800
+Subject: [PATCH 4/4] experimental: enable dynarec for Windows ARM
+
+---
+ src/cpu_new/codegen_backend.h          |  2 +-
+ src/cpu_new/codegen_backend_arm.c      |  2 +-
+ src/cpu_new/codegen_backend_arm_ops.c  |  2 +-
+ src/cpu_new/codegen_backend_arm_uops.c |  2 +-
+ src/win/Makefile_ndr.mingw             | 11 +++++------
+ 5 files changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/src/cpu_new/codegen_backend.h b/src/cpu_new/codegen_backend.h
+index acbdab83..13dc92e5 100644
+--- a/src/cpu_new/codegen_backend.h
++++ b/src/cpu_new/codegen_backend.h
+@@ -5,7 +5,7 @@
+ #include "codegen_backend_x86-64.h"
+ #elif defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86
+ #include "codegen_backend_x86.h"
+-#elif defined __ARM_EABI__
++#elif defined __ARM_EABI__ || defined _M_ARM
+ #include "codegen_backend_arm.h"
+ #elif defined __aarch64__
+ #include "codegen_backend_arm64.h"
+diff --git a/src/cpu_new/codegen_backend_arm.c b/src/cpu_new/codegen_backend_arm.c
+index ddabbb5c..1962a1a2 100644
+--- a/src/cpu_new/codegen_backend_arm.c
++++ b/src/cpu_new/codegen_backend_arm.c
+@@ -1,4 +1,4 @@
+-#ifdef __ARM_EABI__
++#if defined __ARM_EABI__ || defined _M_ARM
+ 
+ #include <stdint.h>
+ #include <stdlib.h>
+diff --git a/src/cpu_new/codegen_backend_arm_ops.c b/src/cpu_new/codegen_backend_arm_ops.c
+index 1b2ef28f..d68a06fe 100644
+--- a/src/cpu_new/codegen_backend_arm_ops.c
++++ b/src/cpu_new/codegen_backend_arm_ops.c
+@@ -1,4 +1,4 @@
+-#ifdef __ARM_EABI__
++#if defined __ARM_EABI__ || defined _M_ARM
+ 
+ #include <stdint.h>
+ #include "../86box.h"
+diff --git a/src/cpu_new/codegen_backend_arm_uops.c b/src/cpu_new/codegen_backend_arm_uops.c
+index 1dbaab40..7536b14b 100644
+--- a/src/cpu_new/codegen_backend_arm_uops.c
++++ b/src/cpu_new/codegen_backend_arm_uops.c
+@@ -1,4 +1,4 @@
+-#ifdef __ARM_EABI__
++#if defined __ARM_EABI__ || defined _M_ARM
+ 
+ #include <math.h>
+ #include <stdint.h>
+diff --git a/src/win/Makefile_ndr.mingw b/src/win/Makefile_ndr.mingw
+index 6facd8cf..b4c4e220 100644
+--- a/src/win/Makefile_ndr.mingw
++++ b/src/win/Makefile_ndr.mingw
+@@ -203,12 +203,6 @@ MUNT		:= y
+ endif
+ ifndef DYNAREC
+  DYNAREC		:= y
+- ifeq ($(ARM), y)
+-  DYNAREC		:= n
+- endif
+- ifeq ($(ARM64), y)
+-  DYNAREC   := n
+- endif
+ endif
+ ifndef DISCORD
+  DISCORD	:= y
+@@ -360,6 +354,11 @@ ifeq ($(DYNAREC), y)
+ ifeq ($(X64), y)
+ PLATCG		:= codegen_backend_x86-64.o codegen_backend_x86-64_ops.o codegen_backend_x86-64_ops_sse.o \
+ 		   codegen_backend_x86-64_uops.o
++else ifeq ($(ARM64), y)
++PLATCG		:= codegen_backend_arm64.o codegen_backend_arm64_ops.o codegen_backend_arm64_uops.o \
++		   codegen_backend_arm64_imm.o
++else ifeq ($(ARM), y)
++PLATCG		:= codegen_backend_arm.o codegen_backend_arm_ops.o codegen_backend_arm_uops.o
+ else
+ PLATCG		:= codegen_backend_x86.o codegen_backend_x86_ops.o codegen_backend_x86_ops_fpu.o codegen_backend_x86_ops_sse.o \
+ 		   codegen_backend_x86_uops.o
+-- 
+2.17.1
+
