@@ -34,6 +34,8 @@ function build_lib() {
 build_lib "libpowrprof.a"
 build_lib "libsetupapi.a"
 
+ls -l .
+
 # zlib
 pushd $(find zlib-* -type d | head -n 1)
 make -j $(nproc) -f win32/Makefile.gcc PREFIX=$HOST- || exit 1
