@@ -45,7 +45,7 @@ popd
 
 # Winpcap headers
 pushd WpdPack/Include
-cp -R *.* $PREFIX/include
+cp -R * $PREFIX/include
 popd
 
 find $PREFIX/
