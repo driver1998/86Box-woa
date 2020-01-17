@@ -34,6 +34,15 @@ function build_lib() {
 build_lib "libpowrprof.a"
 build_lib "libsetupapi.a"
 
+# zlib
+pushd $(find zlib-* -type d | head -n 1)
+make -j $(nproc) -f win32/Makefile.gcc PREFIX=$HOST- || exit 1
+make -f win32/Makefile.gcc install SHARED_MODE=1 \
+     BINARY_PATH=$PREFIX/bin \
+     INCLUDE_PATH=$PREFIX/include \
+     LIBRARY_PATH=$PREFIX/lib || exit 1
+popd
+
 # Ghostscript headers
 pushd $(find ghostscript-* -type d | head -n 1)
 mkdir $PREFIX/include/ghostscript
@@ -43,15 +52,6 @@ popd
 # Winpcap headers
 pushd WpdPack/Include
 cp -R *.* $PREFIX/include
-popd
-
-# zlib
-pushd $(find zlib-* -type d | head -n 1)
-make -j $(nproc) -f win32/Makefile.gcc PREFIX=$HOST- || exit 1
-make -f win32/Makefile.gcc install SHARED_MODE=1 \
-     BINARY_PATH=$PREFIX/bin \
-     INCLUDE_PATH=$PREFIX/include \
-     LIBRARY_PATH=$PREFIX/lib || exit 1
 popd
 
 # libpng
