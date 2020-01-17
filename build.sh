@@ -10,7 +10,6 @@ export LDFLAGS="-L$PREFIX/lib"
 export CXXFLAGS=$CFLAGS
 export CPPFLAGS=$CFLAGS
 
-
 echo Building for $HOST
 
 # For some reason MinGW ARM is missing serveral libs compared to x86
@@ -91,7 +90,7 @@ cd ..
 # Winpcap headers
 cd WpdPack/Include
 cp -R *.* $PREFIX/include
-cd ..
+cd ../../
 
 # 86Box
 cd 86Box
