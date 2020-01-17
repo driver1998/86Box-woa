@@ -1,0 +1,55 @@
+From b2b551968837848c9f5738c8aa0c892c43973444 Mon Sep 17 00:00:00 2001
+From: GH Cao <driver1998@foxmail.com>
+Date: Fri, 17 Jan 2020 19:04:59 +0800
+Subject: [PATCH 7/7] win: fix SetCurrentProcessExplicitAppUserModelID
+
+---
+ src/win/Makefile.mingw     | 2 +-
+ src/win/Makefile_ndr.mingw | 2 +-
+ src/win/win.c              | 2 ++
+ 3 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/win/Makefile.mingw b/src/win/Makefile.mingw
+index 1c3b46fc..3269fb52 100644
+--- a/src/win/Makefile.mingw
++++ b/src/win/Makefile.mingw
+@@ -720,7 +720,7 @@ endif
+ ifneq ($(WX), n)
+ LIBS		+= $(WX_LIBS) -lm
+ endif
+-LIBS		+= -lpng -lz -lwsock32 -liphlpapi -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++ 
++LIBS		+= -lpng -lz -lwsock32 -lshell32 -liphlpapi -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++
+ ifneq ($(X64), y)
+ LIBS		+= -Wl,--large-address-aware
+ endif
+diff --git a/src/win/Makefile_ndr.mingw b/src/win/Makefile_ndr.mingw
+index 61fcfc48..c1157d30 100644
+--- a/src/win/Makefile_ndr.mingw
++++ b/src/win/Makefile_ndr.mingw
+@@ -725,7 +725,7 @@ endif
+ ifneq ($(WX), n)
+ LIBS		+= $(WX_LIBS) -lm
+ endif
+-LIBS		+= -lpng -lz -lwsock32 -liphlpapi -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++ 
++LIBS		+= -lpng -lz -lwsock32 -lshell32 -liphlpapi -lSDL2 -limm32 -lhid -lsetupapi -loleaut32 -lversion -lwinmm -static -lstdc++
+ ifneq ($(X64), y)
+ LIBS		+= -Wl,--large-address-aware
+ endif
+diff --git a/src/win/win.c b/src/win/win.c
+index 7fc83249..c7cf157e 100644
+--- a/src/win/win.c
++++ b/src/win/win.c
+@@ -19,8 +19,10 @@
+  *		Copyright 2017-2019 Fred N. van Kempen.
+  */
+ #define UNICODE
++#define NTDDI_VERSION 0x06010000
+ #include <windows.h>
+ #include <shlobj.h>
++#include <shobjidl.h>
+ #include <fcntl.h>
+ #include <stdarg.h>
+ #include <stdint.h>
+-- 
+2.17.1
+

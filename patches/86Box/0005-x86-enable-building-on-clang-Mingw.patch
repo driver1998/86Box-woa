@@ -1,7 +1,7 @@
 From e190bc41b46c20ff8989dad116c21d0535a88f94 Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 18:19:20 +0800
-Subject: [PATCH 5/6] x86 enable building on clang/Mingw
+Subject: [PATCH 5/7] x86 enable building on clang/Mingw
 
 ---
  src/win/Makefile.mingw     | 6 +++---

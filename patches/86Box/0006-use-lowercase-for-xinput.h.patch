@@ -1,7 +1,7 @@
 From 224aa72e9e52d23802a91d5509fecca478a29ddd Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 18:20:05 +0800
-Subject: [PATCH 6/6] use lowercase for xinput.h
+Subject: [PATCH 6/7] use lowercase for xinput.h
 
 ---
  src/win/win_joystick_xinput.cpp | 2 +-

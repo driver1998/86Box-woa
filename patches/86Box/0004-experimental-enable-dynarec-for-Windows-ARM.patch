@@ -1,7 +1,7 @@
 From 6712b8369fbef8a1d262ce2ff06eca2f058eea5f Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 16:12:34 +0800
-Subject: [PATCH 4/6] experimental: enable dynarec for Windows ARM
+Subject: [PATCH 4/7] experimental: enable dynarec for Windows ARM
 
 ---
  src/cpu_new/codegen_backend.h          |  2 +-
