@@ -34,34 +34,45 @@ function build_lib() {
 build_lib "libpowrprof.a"
 build_lib "libsetupapi.a"
 
+# Ghostscript headers
+pushd $(find ghostscript-* -type d | head -n 1)
+mkdir $PREFIX/include/ghostscript
+cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
+popd
+
+# Winpcap headers
+pushd WpdPack/Include
+cp -R *.* $PREFIX/include
+popd
+
 # zlib
-cd $(find zlib-* -type d | head -n 1)
+pushd $(find zlib-* -type d | head -n 1)
 make -j $(nproc) -f win32/Makefile.gcc PREFIX=$HOST- || exit 1
 make -f win32/Makefile.gcc install SHARED_MODE=1 \
      BINARY_PATH=$PREFIX/bin \
      INCLUDE_PATH=$PREFIX/include \
      LIBRARY_PATH=$PREFIX/lib || exit 1
-cd ..
+popd
 
 # libpng
-cd $(find libpng-* -type d | head -n 1)
+pushd $(find libpng-* -type d | head -n 1)
 ./configure --prefix=$PREFIX --host=$HOST || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
-cd ..
+popd
 
 # SDL2
-cd $(find SDL2-* -type d | head -n 1)
+pushd $(find SDL2-* -type d | head -n 1)
 patch -p1 < ../patches/sdl2-fix-arm-build.patch
 aclocal
 autoconf
 ./configure --prefix=$PREFIX --host=$HOST --disable-video-opengl || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
-cd ..
+popd
 
 # openal-soft
-cd $(find openal-soft-* -type d | head -n 1)
+pushd $(find openal-soft-* -type d | head -n 1)
 patch -p1 < ../patches/openal-assume-neon-on-windows-arm.patch
 sed -i "s/\/usr\/\${HOST}/$(echo $PREFIX | sed 's/\//\\\//g')/g" XCompile.txt
 cmake . -DCMAKE_TOOLCHAIN_FILE=XCompile.txt -DHOST=$HOST \
@@ -72,36 +83,25 @@ make install     || exit 1
 pushd $PREFIX/lib
 ln -s libOpenAL32.dll.a libopenal.a
 popd
-cd ..
+popd
 
 # freetype
-cd $(find freetype-* -type d | head -n 1)
+pushd $(find freetype-* -type d | head -n 1)
 ./configure --prefix=$PREFIX --host=$HOST || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
-cd ..
-
-# Ghostscript headers
-cd $(find ghostscript-* -type d | head -n 1)
-mkdir $PREFIX/include/ghostscript
-cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
-cd ..
-
-# Winpcap headers
-cd WpdPack/Include
-cp -R *.* $PREFIX/include
-cd ../../
+popd
 
 # 86Box
-cd 86Box
+pushd 86Box
 for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
 cd src
-if [ $ARCH == "i686"    ]; then 86BOX_ARGS=                   ; fi
+if [ $ARCH == "i686"    ]; then 86BOX_ARGS=""                 ; fi
 if [ $ARCH == "x86_64"  ]; then 86BOX_ARGS="X64=y"            ; fi
 if [ $ARCH == "armv7"   ]; then 86BOX_ARGS="ARM=y   XINPUT=y" ; fi
 if [ $ARCH == "aarch64" ]; then 86BOX_ARGS="ARM64=y XINPUT=y" ; fi
 make -f win/Makefile_ndr.mingw $86BOX_ARGS -j $(nproc)
 cp 86Box.exe pcap_if.exe $PREFIX/bin
-cd ../../
+popd
 
 find $PREFIX/bin
