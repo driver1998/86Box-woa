@@ -96,13 +96,13 @@ popd
 
 # 86Box
 pushd 86box
-for p in ../patches/86box/*.patch; do patch -p1 < "$p"; done
+for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
 cd src
-if [ $ARCH == "i686"    ]; then 86BOX_ARGS=""                 ; fi
-if [ $ARCH == "x86_64"  ]; then 86BOX_ARGS="X64=y"            ; fi
-if [ $ARCH == "armv7"   ]; then 86BOX_ARGS="ARM=y   XINPUT=y" ; fi
-if [ $ARCH == "aarch64" ]; then 86BOX_ARGS="ARM64=y XINPUT=y" ; fi
-make -f win/Makefile_ndr.mingw $86BOX_ARGS -j $(nproc)
+if [ $ARCH == "i686"    ]; then _86BOX_ARGS=""                 ; fi
+if [ $ARCH == "x86_64"  ]; then _86BOX_ARGS="X64=y"            ; fi
+if [ $ARCH == "armv7"   ]; then _86BOX_ARGS="ARM=y   XINPUT=y" ; fi
+if [ $ARCH == "aarch64" ]; then _86BOX_ARGS="ARM64=y XINPUT=y" ; fi
+make -f win/Makefile_ndr.mingw $_86BOX_ARGS -j $(nproc)
 cp 86Box.exe pcap_if.exe $PREFIX/bin
 popd
 
