@@ -1,0 +1,25 @@
+From 224aa72e9e52d23802a91d5509fecca478a29ddd Mon Sep 17 00:00:00 2001
+From: GH Cao <driver1998@foxmail.com>
+Date: Fri, 17 Jan 2020 18:20:05 +0800
+Subject: [PATCH 6/6] use lowercase for xinput.h
+
+---
+ src/win/win_joystick_xinput.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/win/win_joystick_xinput.cpp b/src/win/win_joystick_xinput.cpp
+index 6be292c1..dbbbeffd 100644
+--- a/src/win/win_joystick_xinput.cpp
++++ b/src/win/win_joystick_xinput.cpp
+@@ -18,7 +18,7 @@
+  *		Copyright 2016-2018 Miran Grca.
+  *		Copyright 2019 GH Cao.
+  */
+-#include <Xinput.h>
++#include <xinput.h>
+ #include <math.h>
+ #include <stdarg.h>
+ #include <stdint.h>
+-- 
+2.17.1
+

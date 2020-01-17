@@ -1,7 +1,7 @@
 From 1da02ffd745f3b46185f6bb4fa0a80a9d78b42e4 Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 16:11:02 +0800
-Subject: [PATCH 3/4] Makefile cleanup, add xinput back as option
+Subject: [PATCH 3/6] Makefile cleanup, add xinput back as option
 
 ---
  src/win/Makefile.mingw     | 30 +++++++++++++++++-------------
