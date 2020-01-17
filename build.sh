@@ -95,8 +95,8 @@ make install     || exit 1
 popd
 
 # 86Box
-pushd 86Box
-for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
+pushd 86box
+for p in ../patches/86box/*.patch; do patch -p1 < "$p"; done
 cd src
 if [ $ARCH == "i686"    ]; then 86BOX_ARGS=""                 ; fi
 if [ $ARCH == "x86_64"  ]; then 86BOX_ARGS="X64=y"            ; fi
