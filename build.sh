@@ -38,7 +38,7 @@ mkdir $PREFIX
 mkdir $PREFIX/include
 
 # Ghostscript headers
-pushd $(find ghostscript-* -type d | head -n 1)
+pushd $(find ghostscript-* -type d -maxdepth 1 | head -n 1)
 mkdir $PREFIX/include/ghostscript
 cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
 popd
@@ -51,7 +51,7 @@ popd
 find $PREFIX/
 
 # zlib
-pushd $(find zlib-* -type d | head -n 1)
+pushd $(find zlib-* -type d -maxdepth 1 | head -n 1)
 make -j $(nproc) -f win32/Makefile.gcc PREFIX=$HOST- || exit 1
 make -f win32/Makefile.gcc install SHARED_MODE=1 \
      BINARY_PATH=$PREFIX/bin \
@@ -60,14 +60,14 @@ make -f win32/Makefile.gcc install SHARED_MODE=1 \
 popd
 
 # libpng
-pushd $(find libpng-* -type d | head -n 1)
+pushd $(find libpng-* -type d -maxdepth 1 | head -n 1)
 ./configure --prefix=$PREFIX --host=$HOST || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
 popd
 
 # SDL2
-pushd $(find SDL2-* -type d | head -n 1)
+pushd $(find SDL2-* -type d -maxdepth 1 | head -n 1)
 patch -p1 < ../patches/sdl2-fix-arm-build.patch
 aclocal
 autoconf
@@ -77,7 +77,7 @@ make install     || exit 1
 popd
 
 # openal-soft
-pushd $(find openal-soft-* -type d | head -n 1)
+pushd $(find openal-soft-* -type d -maxdepth 1 | head -n 1)
 patch -p1 < ../patches/openal-assume-neon-on-windows-arm.patch
 sed -i "s/\/usr\/\${HOST}/$(echo $PREFIX | sed 's/\//\\\//g')/g" XCompile.txt
 cmake . -DCMAKE_TOOLCHAIN_FILE=XCompile.txt -DHOST=$HOST \
@@ -91,7 +91,7 @@ popd
 popd
 
 # freetype
-pushd $(find freetype-* -type d | head -n 1)
+pushd $(find freetype-* -type d -maxdepth 1 | head -n 1)
 ./configure --prefix=$PREFIX --host=$HOST || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
