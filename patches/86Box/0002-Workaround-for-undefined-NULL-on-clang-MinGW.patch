@@ -1,7 +1,7 @@
-From 899582b3ca7daa6e0fd191e66054d275ee825d6b Mon Sep 17 00:00:00 2001
+From d23a725e664355ddc63b87fd559e805d33b3348a Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 15:21:55 +0800
-Subject: [PATCH 2/7] Workaround for undefined NULL on clang/MinGW
+Subject: [PATCH 2/4] Workaround for undefined NULL on clang/MinGW
 
 ---
  src/cpu_new/386_common.h | 4 ++++

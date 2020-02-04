@@ -1,7 +1,7 @@
-From e190bc41b46c20ff8989dad116c21d0535a88f94 Mon Sep 17 00:00:00 2001
+From 0b13769ac73759b62001a2ff51c6e27adaccc7ef Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 18:19:20 +0800
-Subject: [PATCH 5/7] x86 enable building on clang/Mingw
+Subject: [PATCH 4/4] x86 enable building on clang/MinGW
 
 ---
  src/win/Makefile.mingw     | 6 +++---
@@ -9,10 +9,10 @@ Subject: [PATCH 5/7] x86 enable building on clang/Mingw
  2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/src/win/Makefile.mingw b/src/win/Makefile.mingw
-index 0a37bbf2..1c3b46fc 100644
+index 1bccbeaa..e5c56a67 100644
 --- a/src/win/Makefile.mingw
 +++ b/src/win/Makefile.mingw
-@@ -274,9 +274,9 @@ else
+@@ -280,9 +280,9 @@ else
  TOOL_PREFIX     := i686-w64-mingw32-
  endif
  CPP             := ${TOOL_PREFIX}g++
@@ -26,10 +26,10 @@ index 0a37bbf2..1c3b46fc 100644
  CPP		:= aarch64-w64-mingw32-g++
  CC		:= aarch64-w64-mingw32-gcc
 diff --git a/src/win/Makefile_ndr.mingw b/src/win/Makefile_ndr.mingw
-index b4c4e220..61fcfc48 100644
+index 47487e8e..ede5a9dd 100644
 --- a/src/win/Makefile_ndr.mingw
 +++ b/src/win/Makefile_ndr.mingw
-@@ -269,8 +269,8 @@ TOOL_PREFIX     := i686-w64-mingw32-
+@@ -275,8 +275,8 @@ TOOL_PREFIX     := i686-w64-mingw32-
  endif
  CPP             := ${TOOL_PREFIX}g++
  CC              := ${TOOL_PREFIX}gcc

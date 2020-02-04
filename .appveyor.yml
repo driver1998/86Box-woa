@@ -9,7 +9,7 @@ environment:
   
 install:
   - sh: |-
-      curl -o llvm-mingw.tar.xz    -L https://github.com/mstorsjo/llvm-mingw/releases/download/20190920/llvm-mingw-20190920-ubuntu-16.04.tar.xz
+      curl -o llvm-mingw.tar.xz    -L https://github.com/mstorsjo/llvm-mingw/releases/download/20191230/llvm-mingw-20191230-ubuntu-16.04.tar.xz
       tar xJf llvm-mingw.tar.xz    || exit 1
       curl -o sdl.tar.gz           -L https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
       tar xzf sdl.tar.gz           || exit 1
@@ -25,9 +25,15 @@ install:
       tar xzf ghostscript.tar.gz   || exit 1
       curl -o wpdpack.zip          -L https://www.winpcap.org/install/bin/WpdPack_4_1_2.zip
       7z  x   wpdpack.zip          || exit 1
-      git clone https://github.com/86box/86box --depth 1
-      sudo apt-get update -qq
+      git clone https://github.com/driver1998/86box -b rawinput --depth 1
       chmod +x build.sh
       
 build_script:
   sh: ./build.sh
+
+after_build:
+  sh: tar cJf 86box.tar.xz $ARCH-w64-mingw32
+
+artifacts:
+  - path: '86box.tar.xz'
+    name: 86Box
