@@ -1,7 +1,7 @@
 HOST=$ARCH-w64-mingw32
 PREFIX=$PWD/$HOST
 
-export MINGW_ROOT=$PWD/$(find llvm-mingw* -type d | head -n 1)
+export MINGW_ROOT=$PWD/$(find llvm-mingw* -maxdepth 1 -type d | head -n 1)
 export PATH=$PATH:$MINGW_ROOT/bin:$PREFIX/bin
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX/lib/pkgconfig
 
@@ -17,7 +17,6 @@ echo Building for $HOST
 # $1 : The lib filename, in MinGW convention
 #      xyz.dll -> libxyz.a
 function build_lib() {
-    if [ $ARCH == "i686" ] || [ $ARCH == 'x86_64' ]; then return; fi
     LIBFILE=$1
     MODULE=$(echo $LIBFILE | sed 's/lib\(.*\?\)\.a/\1/g')
     DLLFILE=$(echo $MODULE | tr '/a-z/' '/A-Z/').dll
@@ -31,14 +30,17 @@ function build_lib() {
     $HOST-dlltool -d $MODULE.def -l $MINGW_ROOT/$HOST/lib/$LIBFILE
 }
 
-build_lib "libpowrprof.a"
-build_lib "libsetupapi.a"
+if [ $ARCH == "aarch64" ]
+then
+    build_lib "libpowrprof.a"
+    build_lib "libsetupapi.a"
+fi
 
 mkdir $PREFIX
 mkdir $PREFIX/include
 
 # Ghostscript headers
-pushd $(find ghostscript-* -type d -maxdepth 1 | head -n 1)
+pushd $(find ghostscript-* -maxdepth 1 -type d | head -n 1)
 mkdir $PREFIX/include/ghostscript
 cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
 popd
@@ -48,10 +50,8 @@ pushd WpdPack/Include
 cp -R * $PREFIX/include
 popd
 
-find $PREFIX/
-
 # zlib
-pushd $(find zlib-* -type d -maxdepth 1 | head -n 1)
+pushd $(find zlib-* -maxdepth 1 -type d | head -n 1)
 make -j $(nproc) -f win32/Makefile.gcc PREFIX=$HOST- || exit 1
 make -f win32/Makefile.gcc install SHARED_MODE=1 \
      BINARY_PATH=$PREFIX/bin \
@@ -60,24 +60,26 @@ make -f win32/Makefile.gcc install SHARED_MODE=1 \
 popd
 
 # libpng
-pushd $(find libpng-* -type d -maxdepth 1 | head -n 1)
+pushd $(find libpng-* -maxdepth 1 -type d | head -n 1)
 ./configure --prefix=$PREFIX --host=$HOST || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
 popd
 
 # SDL2
-pushd $(find SDL2-* -type d -maxdepth 1 | head -n 1)
+pushd $(find SDL2-* -maxdepth 1 -type d | head -n 1)
 patch -p1 < ../patches/sdl2-fix-arm-build.patch
 aclocal
 autoconf
-./configure --prefix=$PREFIX --host=$HOST --disable-video-opengl || exit 1
+./configure --prefix=$PREFIX --host=$HOST --disable-video-opengl \
+            --disable-video-opengles --disable-video-opengles1 \
+            --disable-video-opengles2 --disable-video-vulkan || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
 popd
 
 # openal-soft
-pushd $(find openal-soft-* -type d -maxdepth 1 | head -n 1)
+pushd $(find openal-soft-* -maxdepth 1 -type d | head -n 1)
 patch -p1 < ../patches/openal-assume-neon-on-windows-arm.patch
 sed -i "s/\/usr\/\${HOST}/$(echo $PREFIX | sed 's/\//\\\//g')/g" XCompile.txt
 cmake . -DCMAKE_TOOLCHAIN_FILE=XCompile.txt -DHOST=$HOST \
@@ -91,13 +93,18 @@ popd
 popd
 
 # freetype
-pushd $(find freetype-* -type d -maxdepth 1 | head -n 1)
+pushd $(find freetype-* -maxdepth 1 -type d | head -n 1)
 ./configure --prefix=$PREFIX --host=$HOST || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
 popd
 
 # 86Box
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CXXFLAGS=$CFLAGS
+export CPPFLAGS=$CFLAGS
+
 pushd 86box
 for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
 cd src

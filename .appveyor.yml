@@ -17,7 +17,7 @@ install:
       tar xJf zlib.tar.xz          || exit 1
       curl -o libpng.tar.xz        -L https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz
       tar xJf libpng.tar.xz        || exit 1
-      curl -o openal-soft.tar.bz2  -L https://kcat.strangesoft.net/openal-releases/openal-soft-1.20.0.tar.bz2
+      curl -o openal-soft.tar.bz2  -L https://kcat.strangesoft.net/openal-releases/openal-soft-1.19.1.tar.bz2
       tar xjf openal-soft.tar.bz2  || exit 1
       curl -o freetype.tar.xz      -L https://download.savannah.gnu.org/releases/freetype/freetype-2.10.1.tar.xz
       tar xJf freetype.tar.xz      || exit 1

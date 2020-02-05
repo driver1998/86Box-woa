@@ -1,16 +1,51 @@
-From 98a9ceb19ee00afaa60f90ce1c0d45f343a523d9 Mon Sep 17 00:00:00 2001
+From b3c18a49c6863c6b9400d427ff3001303a5123ad Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Wed, 5 Feb 2020 06:44:48 +0800
 Subject: [PATCH 4/4] experimental: enable dynarec for Windows ARM
 
 ---
+ src/cpu_new/codegen_allocator.c        |  6 +++++-
+ src/cpu_new/codegen_allocator.h        |  2 +-
  src/cpu_new/codegen_backend.h          |  2 +-
- src/cpu_new/codegen_backend_arm.c      |  2 +-
+ src/cpu_new/codegen_backend_arm.c      |  6 ++++--
  src/cpu_new/codegen_backend_arm_ops.c  |  2 +-
  src/cpu_new/codegen_backend_arm_uops.c |  2 +-
  src/win/Makefile_ndr.mingw             | 11 +++++------
- 5 files changed, 9 insertions(+), 10 deletions(-)
+ 7 files changed, 18 insertions(+), 13 deletions(-)
 
+diff --git a/src/cpu_new/codegen_allocator.c b/src/cpu_new/codegen_allocator.c
+index b78c4df1..b94dd790 100644
+--- a/src/cpu_new/codegen_allocator.c
++++ b/src/cpu_new/codegen_allocator.c
+@@ -112,10 +112,14 @@ uint8_t *codeblock_allocator_get_ptr(mem_block_t *block)
+ 
+ void codegen_allocator_clean_blocks(struct mem_block_t *block)
+ {
+-#if defined __ARM_EABI__ || defined __aarch64__
++#if defined __ARM_EABI__ || defined _ARM_ || defined __aarch64__
+         while (1)
+         {
++#if defined WIN32 || defined _WIN32 || defined _WIN32
++                FlushInstructionCache(GetCurrentProcess(), &mem_block_alloc[block->offset], MEM_BLOCK_SIZE);
++#else
+ 		__clear_cache(&mem_block_alloc[block->offset], &mem_block_alloc[block->offset + MEM_BLOCK_SIZE]);
++#endif
+ 		if (block->next)
+ 			block = &mem_blocks[block->next - 1];
+ 		else
+diff --git a/src/cpu_new/codegen_allocator.h b/src/cpu_new/codegen_allocator.h
+index 90fa1c0b..a2dfd393 100644
+--- a/src/cpu_new/codegen_allocator.h
++++ b/src/cpu_new/codegen_allocator.h
+@@ -13,7 +13,7 @@
+   Due to the chaining, the total memory size is limited by the range of a jump
+   instruction. ARMv7 is restricted to +/- 32 MB, ARMv8 to +/- 128 MB, x86 to
+   +/- 2GB. As a result, total memory size is limited to 32 MB on ARMv7*/
+-#ifdef __ARM_EABI__
++#if defined __ARM_EABI__ || defined _ARM_
+ #define MEM_BLOCK_NR 32768
+ #else
+ #define MEM_BLOCK_NR 131072
 diff --git a/src/cpu_new/codegen_backend.h b/src/cpu_new/codegen_backend.h
 index acbdab83..93193900 100644
 --- a/src/cpu_new/codegen_backend.h
@@ -25,32 +60,50 @@ index acbdab83..93193900 100644
  #elif defined __aarch64__
  #include "codegen_backend_arm64.h"
 diff --git a/src/cpu_new/codegen_backend_arm.c b/src/cpu_new/codegen_backend_arm.c
-index ddabbb5c..90efa1a4 100644
+index ddabbb5c..fab00285 100644
 --- a/src/cpu_new/codegen_backend_arm.c
 +++ b/src/cpu_new/codegen_backend_arm.c
 @@ -1,4 +1,4 @@
 -#ifdef __ARM_EABI__
-+#if defined(__ARM_EABI__) || defined(_ARM_)
++#if defined __ARM_EABI__ || defined _ARM_
  
  #include <stdint.h>
  #include <stdlib.h>
+@@ -310,7 +310,7 @@ void codegen_backend_init()
+         block->data = codeblock_allocator_get_ptr(block->head_mem_block);
+         block_write_data = block->data;
+         build_loadstore_routines(&codeblock[block_current]);
+-printf("block_pos=%i\n", block_pos);
++//printf("block_pos=%i\n", block_pos);
+ 
+         codegen_fp_round = &block_write_data[block_pos];
+ 	build_fp_round_routine(&codeblock[block_current]);
+@@ -326,6 +326,8 @@ printf("block_pos=%i\n", block_pos);
+ 	host_arm_LDMIA_WB(block, REG_HOST_SP, REG_MASK_LOCAL | REG_MASK_PC);
+ 
+         block_write_data = NULL;
++
++	codegen_allocator_clean_blocks(block->head_mem_block);
+ //fatal("block_pos=%i\n", block_pos);
+ 	asm("vmrs %0, fpscr\n"
+                 : "=r" (cpu_state.old_fp_control)
 diff --git a/src/cpu_new/codegen_backend_arm_ops.c b/src/cpu_new/codegen_backend_arm_ops.c
-index 1b2ef28f..4e858149 100644
+index 1b2ef28f..7c0cb746 100644
 --- a/src/cpu_new/codegen_backend_arm_ops.c
 +++ b/src/cpu_new/codegen_backend_arm_ops.c
 @@ -1,4 +1,4 @@
 -#ifdef __ARM_EABI__
-+#if defined(__ARM_EABI__) || defined (_ARM_)
++#if defined __ARM_EABI__ || defined _ARM_
  
  #include <stdint.h>
  #include "../86box.h"
 diff --git a/src/cpu_new/codegen_backend_arm_uops.c b/src/cpu_new/codegen_backend_arm_uops.c
-index 1dbaab40..46bc92e3 100644
+index 1dbaab40..aff0d15b 100644
 --- a/src/cpu_new/codegen_backend_arm_uops.c
 +++ b/src/cpu_new/codegen_backend_arm_uops.c
 @@ -1,4 +1,4 @@
 -#ifdef __ARM_EABI__
-+#if defined(__ARM_EABI__) || defined(_ARM_)
++#if defined __ARM_EABI__ || defined _ARM_
  
  #include <math.h>
  #include <stdint.h>
