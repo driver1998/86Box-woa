@@ -1,4 +1,4 @@
-From d23a725e664355ddc63b87fd559e805d33b3348a Mon Sep 17 00:00:00 2001
+From 4049e9acca5afc93ab26d426565f58d9ac02007e Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 15:21:55 +0800
 Subject: [PATCH 2/4] Workaround for undefined NULL on clang/MinGW
