@@ -108,10 +108,10 @@ export CPPFLAGS=$CFLAGS
 pushd 86box
 for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
 cd src
-if [ $ARCH == "i686"    ]; then _86BOX_ARGS="DINPUT=n"         ; fi
-if [ $ARCH == "x86_64"  ]; then _86BOX_ARGS="DINPUT=n X64=y"   ; fi
-if [ $ARCH == "armv7"   ]; then _86BOX_ARGS="DINPUT=n ARM=y"   ; fi
-if [ $ARCH == "aarch64" ]; then _86BOX_ARGS="DINPUT=n ARM64=y" ; fi
+if [ $ARCH == "i686"    ]; then _86BOX_ARGS="OPTIM=y DINPUT=n"         ; fi
+if [ $ARCH == "x86_64"  ]; then _86BOX_ARGS="OPTIM=y DINPUT=n X64=y"   ; fi
+if [ $ARCH == "armv7"   ]; then _86BOX_ARGS="OPTIM=y DINPUT=n ARM=y"   ; fi
+if [ $ARCH == "aarch64" ]; then _86BOX_ARGS="OPTIM=y DINPUT=n ARM64=y" ; fi
 make -f win/Makefile_ndr.mingw $_86BOX_ARGS -j $(nproc) || exit 1
 cp 86Box.exe pcap_if.exe $PREFIX/bin
 popd
