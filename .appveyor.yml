@@ -32,8 +32,20 @@ build_script:
   sh: ./build.sh
 
 after_build:
-  sh: tar cJf 86box.tar.xz $ARCH-w64-mingw32
+  sh: |-
+    pushd 86box
+    COMMIT=$(git describe --always)
+    mv 86Box.zip 86Box-$ARCH-$COMMIT.zip
 
 artifacts:
-  - path: '86box.tar.xz'
+  - path: '86box*.zip'
     name: 86Box
+
+deploy:
+  - release: $(APPVEYOR_BUILD_NUMBER)
+    description: 86Box $(APPVEYOR_BUILD_NUMBER)
+    provider: GitHub
+    artifact: /86box.*\.zip/
+    auth_token:
+      secure: H8HAtJ5SrLHk1gW1eYZFcjtekn1rIW7a8GJsNC6Nftcql8wE0seZRtYqMnFoQLnr
+    draft: true

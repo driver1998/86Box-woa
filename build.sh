@@ -116,4 +116,18 @@ make -f win/Makefile_ndr.mingw $_86BOX_ARGS -j $(nproc) || exit 1
 cp 86Box.exe pcap_if.exe $PREFIX/bin
 popd
 
-find $PREFIX/bin
+BIN="86box/src/86Box.exe                \
+     86box/src/pcap_if.exe              \
+     $PREFIX/bin/OpenAL32.dll           \
+     $PREFIX/bin/libfreetype-6.dll      \
+     $MINGW_ROOT/$HOST/bin/libc++.dll   \
+     $MINGW_ROOT/$HOST/bin/libunwind.dll"
+
+mkdir output
+cp $BIN output
+
+pushd output
+mv libfreetype-6.dll freetype.dll
+$HOST-strip *.exe *.dll
+zip ../86Box.zip *
+popd
