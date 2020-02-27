@@ -120,6 +120,8 @@ BIN="86box/src/86Box.exe                \
      86box/src/pcap_if.exe              \
      $PREFIX/bin/OpenAL32.dll           \
      $PREFIX/bin/libfreetype-6.dll      \
+     $PREFIX/bin/libpng16-16.dll        \
+     $PREFIX/bin/zlib1.dll              \
      $MINGW_ROOT/$HOST/bin/libc++.dll   \
      $MINGW_ROOT/$HOST/bin/libunwind.dll"
 

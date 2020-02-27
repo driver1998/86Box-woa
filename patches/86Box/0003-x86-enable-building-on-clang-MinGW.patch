@@ -1,7 +1,7 @@
-From 6348711bd2a0fba5aeb921d8bd509f6870f84331 Mon Sep 17 00:00:00 2001
+From b17bdf2cea0ff4d50212c0bc73e745dc892d72ba Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 18:19:20 +0800
-Subject: [PATCH 3/4] x86 enable building on clang/MinGW
+Subject: [PATCH 3/5] x86 enable building on clang/MinGW
 
 ---
  src/win/Makefile.mingw     | 6 +++---
@@ -41,5 +41,5 @@ index 767329dc..ca6e1371 100644
  CPP		:= aarch64-w64-mingw32-g++
  CC		:= aarch64-w64-mingw32-gcc
 -- 
-2.17.1
+2.21.0.windows.1
 

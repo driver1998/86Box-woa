@@ -1,7 +1,7 @@
-From b3c18a49c6863c6b9400d427ff3001303a5123ad Mon Sep 17 00:00:00 2001
+From d0717bd1f5e860164466461711bb8e3972cad698 Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Wed, 5 Feb 2020 06:44:48 +0800
-Subject: [PATCH 4/4] experimental: enable dynarec for Windows ARM
+Subject: [PATCH 4/5] experimental: enable dynarec for Windows ARM
 
 ---
  src/cpu_new/codegen_allocator.c        |  6 +++++-
@@ -137,5 +137,5 @@ index ca6e1371..e59a8a24 100644
  PLATCG		:= codegen_backend_x86.o codegen_backend_x86_ops.o codegen_backend_x86_ops_fpu.o codegen_backend_x86_ops_sse.o \
  		   codegen_backend_x86_uops.o
 -- 
-2.17.1
+2.21.0.windows.1
 

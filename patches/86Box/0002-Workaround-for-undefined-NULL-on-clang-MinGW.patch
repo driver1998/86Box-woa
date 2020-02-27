@@ -1,7 +1,7 @@
-From 4049e9acca5afc93ab26d426565f58d9ac02007e Mon Sep 17 00:00:00 2001
+From fda1bb05a1e90f0b32a81756c7f4df416d14722a Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Fri, 17 Jan 2020 15:21:55 +0800
-Subject: [PATCH 2/4] Workaround for undefined NULL on clang/MinGW
+Subject: [PATCH 2/5] Workaround for undefined NULL on clang/MinGW
 
 ---
  src/cpu_new/386_common.h | 4 ++++
@@ -23,5 +23,5 @@ index 3ac390f9..0453c25f 100644
  #define readmemw(s,a) ((readlookup2[(uint32_t)((s)+(a))>>12]==-1 || (((s)+(a)) & 1))?readmemwl((s)+(a)):*(uint16_t *)(readlookup2[(uint32_t)((s)+(a))>>12]+(uint32_t)((s)+(a))))
  #define readmeml(s,a) ((readlookup2[(uint32_t)((s)+(a))>>12]==-1 || (((s)+(a)) & 3))?readmemll((s)+(a)):*(uint32_t *)(readlookup2[(uint32_t)((s)+(a))>>12]+(uint32_t)((s)+(a))))
 -- 
-2.17.1
+2.21.0.windows.1
 
