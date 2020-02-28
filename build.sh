@@ -130,6 +130,6 @@ cp $BIN output
 
 pushd output
 mv libfreetype-6.dll freetype.dll
-$HOST-strip *.exe *.dll
+# $HOST-strip *.exe *.dll
 zip ../86Box.zip *
 popd
