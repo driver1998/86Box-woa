@@ -25,7 +25,7 @@ install:
       tar xzf ghostscript.tar.gz   || exit 1
       curl -o wpdpack.zip          -L https://www.winpcap.org/install/bin/WpdPack_4_1_2.zip
       7z  x   wpdpack.zip          || exit 1
-      git clone https://github.com/driver1998/86box -b rawinput --depth 1
+      git clone https://github.com/86box/86box --depth 1
       chmod +x build.sh
       
 build_script:
