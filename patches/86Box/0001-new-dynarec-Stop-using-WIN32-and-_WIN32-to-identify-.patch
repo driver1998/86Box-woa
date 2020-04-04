@@ -1,30 +1,29 @@
-From 84e8ab9edf976b47708ee20890d0a14816d007e1 Mon Sep 17 00:00:00 2001
+From 9ed018eb96c05f0baef337115f384043a428e04a Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
-Date: Fri, 17 Jan 2020 15:18:51 +0800
-Subject: [PATCH 1/5] new dynarec: Stop using WIN32 and _WIN32 to identify x86
+Date: Sun, 29 Mar 2020 08:39:33 +0800
+Subject: [PATCH 1/3] new dynarec: Stop using WIN32 and _WIN32 to identify x86
  MSVC WIN32 is defined in all Windows platforms, including Windows ARM
 
 ---
- src/cpu/x87_ops.h                         | 2 +-
+ src/cpu_common/x87_ops.h                  | 2 +-
  src/cpu_new/codegen_backend.h             | 2 +-
  src/cpu_new/codegen_backend_x86.c         | 2 +-
  src/cpu_new/codegen_backend_x86_ops.c     | 2 +-
  src/cpu_new/codegen_backend_x86_ops_fpu.c | 2 +-
  src/cpu_new/codegen_backend_x86_ops_sse.c | 2 +-
  src/cpu_new/codegen_backend_x86_uops.c    | 2 +-
- src/cpu_new/x87_ops.h                     | 2 +-
- 8 files changed, 8 insertions(+), 8 deletions(-)
+ 7 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/src/cpu/x87_ops.h b/src/cpu/x87_ops.h
-index bf54afa4..6297d8bc 100644
---- a/src/cpu/x87_ops.h
-+++ b/src/cpu/x87_ops.h
-@@ -340,7 +340,7 @@ static __inline uint16_t x87_compare(double a, double b)
+diff --git a/src/cpu_common/x87_ops.h b/src/cpu_common/x87_ops.h
+index 1cb50a9f..061a2301 100644
+--- a/src/cpu_common/x87_ops.h
++++ b/src/cpu_common/x87_ops.h
+@@ -411,7 +411,7 @@ static __inline uint16_t x87_compare(double a, double b)
  
- static inline uint16_t x87_ucompare(double a, double b)
+ static __inline uint16_t x87_ucompare(double a, double b)
  {
 -#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined WIN32 || defined _WIN32 || defined _WIN32 || defined __amd64__
-+#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86 || defined __amd64__ || defined _M_X64
++#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86 || defined _M_AMD64 || defined __amd64__
          uint32_t result;
          
  #ifndef _MSC_VER
@@ -42,68 +41,55 @@ index 89beeee1..acbdab83 100644
  #elif defined __ARM_EABI__
  #include "codegen_backend_arm.h"
 diff --git a/src/cpu_new/codegen_backend_x86.c b/src/cpu_new/codegen_backend_x86.c
-index d83d99af..f01d0238 100644
+index 5ac56923..1e22caa2 100644
 --- a/src/cpu_new/codegen_backend_x86.c
 +++ b/src/cpu_new/codegen_backend_x86.c
 @@ -1,4 +1,4 @@
 -#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined WIN32 || defined _WIN32 || defined _WIN32
-+#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined M_IX86
++#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86
  
  #include <stddef.h>
  #include <stdint.h>
 diff --git a/src/cpu_new/codegen_backend_x86_ops.c b/src/cpu_new/codegen_backend_x86_ops.c
-index f5010e35..c2149a75 100644
+index 0c2b3870..3d71cc08 100644
 --- a/src/cpu_new/codegen_backend_x86_ops.c
 +++ b/src/cpu_new/codegen_backend_x86_ops.c
 @@ -1,4 +1,4 @@
 -#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined WIN32 || defined _WIN32 || defined _WIN32
-+#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined M_IX86
++#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86
  
  #include <stdint.h>
- #include "../86box.h"
+ #include <86box/86box.h>
 diff --git a/src/cpu_new/codegen_backend_x86_ops_fpu.c b/src/cpu_new/codegen_backend_x86_ops_fpu.c
-index dd1e658f..15a482d0 100644
+index 07bcb3e7..cb8f36ac 100644
 --- a/src/cpu_new/codegen_backend_x86_ops_fpu.c
 +++ b/src/cpu_new/codegen_backend_x86_ops_fpu.c
 @@ -1,4 +1,4 @@
 -#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined WIN32 || defined _WIN32 || defined _WIN32
-+#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined M_IX86
++#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86
  
  #include <stdint.h>
- #include "../86box.h"
+ #include <86box/86box.h>
 diff --git a/src/cpu_new/codegen_backend_x86_ops_sse.c b/src/cpu_new/codegen_backend_x86_ops_sse.c
-index d829e409..ede5c31a 100644
+index ab292283..0ab461e7 100644
 --- a/src/cpu_new/codegen_backend_x86_ops_sse.c
 +++ b/src/cpu_new/codegen_backend_x86_ops_sse.c
 @@ -1,4 +1,4 @@
 -#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined WIN32 || defined _WIN32 || defined _WIN32
-+#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined M_IX86
++#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86
  
  #include <stdint.h>
- #include "../86box.h"
+ #include <86box/86box.h>
 diff --git a/src/cpu_new/codegen_backend_x86_uops.c b/src/cpu_new/codegen_backend_x86_uops.c
-index 679a7b77..e6e73aef 100644
+index 04fdb7cd..43737560 100644
 --- a/src/cpu_new/codegen_backend_x86_uops.c
 +++ b/src/cpu_new/codegen_backend_x86_uops.c
 @@ -1,4 +1,4 @@
 -#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined WIN32 || defined _WIN32 || defined _WIN32
-+#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined M_IX86
++#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86
  
  #include <stdint.h>
- #include "../86box.h"
-diff --git a/src/cpu_new/x87_ops.h b/src/cpu_new/x87_ops.h
-index 783a4938..df377bf9 100644
---- a/src/cpu_new/x87_ops.h
-+++ b/src/cpu_new/x87_ops.h
-@@ -326,7 +326,7 @@ static __inline uint16_t x87_compare(double a, double b)
- 
- static inline uint16_t x87_ucompare(double a, double b)
- {
--#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined WIN32 || defined _WIN32 || defined _WIN32 || defined __amd64__
-+#if defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86 || defined __amd64__ || defined _M_X64
-         uint32_t out;
-         
-         /* Memory barrier, to force GCC to write to the input parameters
+ #include <86box/86box.h>
 -- 
-2.21.0.windows.1
+2.17.1
 

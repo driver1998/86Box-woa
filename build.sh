@@ -40,10 +40,10 @@ mkdir $PREFIX
 mkdir $PREFIX/include
 
 # Ghostscript headers
-pushd $(find ghostscript-* -maxdepth 1 -type d | head -n 1)
-mkdir $PREFIX/include/ghostscript
-cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
-popd
+# pushd $(find ghostscript-* -maxdepth 1 -type d | head -n 1)
+# mkdir $PREFIX/include/ghostscript
+# cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
+# popd
 
 # Winpcap headers
 pushd WpdPack/Include

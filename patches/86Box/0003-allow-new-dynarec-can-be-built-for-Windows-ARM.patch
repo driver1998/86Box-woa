@@ -1,23 +1,23 @@
-From d0717bd1f5e860164466461711bb8e3972cad698 Mon Sep 17 00:00:00 2001
+From f26d7bb8b9a35cc312d7bc5e008810738daa6041 Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
-Date: Wed, 5 Feb 2020 06:44:48 +0800
-Subject: [PATCH 4/5] experimental: enable dynarec for Windows ARM
+Date: Sat, 4 Apr 2020 20:12:22 +0800
+Subject: [PATCH 3/3] allow new dynarec can be built for Windows ARM
 
 ---
- src/cpu_new/codegen_allocator.c        |  6 +++++-
- src/cpu_new/codegen_allocator.h        |  2 +-
- src/cpu_new/codegen_backend.h          |  2 +-
- src/cpu_new/codegen_backend_arm.c      |  6 ++++--
- src/cpu_new/codegen_backend_arm_ops.c  |  2 +-
- src/cpu_new/codegen_backend_arm_uops.c |  2 +-
- src/win/Makefile_ndr.mingw             | 11 +++++------
- 7 files changed, 18 insertions(+), 13 deletions(-)
+ src/cpu_new/codegen_allocator.c        | 2 +-
+ src/cpu_new/codegen_allocator.h        | 2 +-
+ src/cpu_new/codegen_backend.h          | 2 +-
+ src/cpu_new/codegen_backend_arm.c      | 2 +-
+ src/cpu_new/codegen_backend_arm_ops.c  | 2 +-
+ src/cpu_new/codegen_backend_arm_uops.c | 2 +-
+ src/win/Makefile_ndr.mingw             | 5 +++++
+ 7 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/src/cpu_new/codegen_allocator.c b/src/cpu_new/codegen_allocator.c
-index b78c4df1..b94dd790 100644
+index e51cdd59..9f46a835 100644
 --- a/src/cpu_new/codegen_allocator.c
 +++ b/src/cpu_new/codegen_allocator.c
-@@ -112,10 +112,14 @@ uint8_t *codeblock_allocator_get_ptr(mem_block_t *block)
+@@ -112,7 +112,7 @@ uint8_t *codeblock_allocator_get_ptr(mem_block_t *block)
  
  void codegen_allocator_clean_blocks(struct mem_block_t *block)
  {
@@ -25,16 +25,9 @@ index b78c4df1..b94dd790 100644
 +#if defined __ARM_EABI__ || defined _ARM_ || defined __aarch64__
          while (1)
          {
-+#if defined WIN32 || defined _WIN32 || defined _WIN32
-+                FlushInstructionCache(GetCurrentProcess(), &mem_block_alloc[block->offset], MEM_BLOCK_SIZE);
-+#else
  		__clear_cache(&mem_block_alloc[block->offset], &mem_block_alloc[block->offset + MEM_BLOCK_SIZE]);
-+#endif
- 		if (block->next)
- 			block = &mem_blocks[block->next - 1];
- 		else
 diff --git a/src/cpu_new/codegen_allocator.h b/src/cpu_new/codegen_allocator.h
-index 90fa1c0b..a2dfd393 100644
+index 90fa1c0b..3b57de16 100644
 --- a/src/cpu_new/codegen_allocator.h
 +++ b/src/cpu_new/codegen_allocator.h
 @@ -13,7 +13,7 @@
@@ -42,12 +35,12 @@ index 90fa1c0b..a2dfd393 100644
    instruction. ARMv7 is restricted to +/- 32 MB, ARMv8 to +/- 128 MB, x86 to
    +/- 2GB. As a result, total memory size is limited to 32 MB on ARMv7*/
 -#ifdef __ARM_EABI__
-+#if defined __ARM_EABI__ || defined _ARM_
++#if defined __ARM_EABI__ || _ARM_
  #define MEM_BLOCK_NR 32768
  #else
  #define MEM_BLOCK_NR 131072
 diff --git a/src/cpu_new/codegen_backend.h b/src/cpu_new/codegen_backend.h
-index acbdab83..93193900 100644
+index acbdab83..391f380b 100644
 --- a/src/cpu_new/codegen_backend.h
 +++ b/src/cpu_new/codegen_backend.h
 @@ -5,7 +5,7 @@
@@ -55,12 +48,12 @@ index acbdab83..93193900 100644
  #elif defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86
  #include "codegen_backend_x86.h"
 -#elif defined __ARM_EABI__
-+#elif defined __ARM_EABI__ || defined _ARM_
++#if defined __ARM_EABI__ || defined _ARM_
  #include "codegen_backend_arm.h"
  #elif defined __aarch64__
  #include "codegen_backend_arm64.h"
 diff --git a/src/cpu_new/codegen_backend_arm.c b/src/cpu_new/codegen_backend_arm.c
-index ddabbb5c..fab00285 100644
+index c422e598..06a06b78 100644
 --- a/src/cpu_new/codegen_backend_arm.c
 +++ b/src/cpu_new/codegen_backend_arm.c
 @@ -1,4 +1,4 @@
@@ -69,26 +62,8 @@ index ddabbb5c..fab00285 100644
  
  #include <stdint.h>
  #include <stdlib.h>
-@@ -310,7 +310,7 @@ void codegen_backend_init()
-         block->data = codeblock_allocator_get_ptr(block->head_mem_block);
-         block_write_data = block->data;
-         build_loadstore_routines(&codeblock[block_current]);
--printf("block_pos=%i\n", block_pos);
-+//printf("block_pos=%i\n", block_pos);
- 
-         codegen_fp_round = &block_write_data[block_pos];
- 	build_fp_round_routine(&codeblock[block_current]);
-@@ -326,6 +326,8 @@ printf("block_pos=%i\n", block_pos);
- 	host_arm_LDMIA_WB(block, REG_HOST_SP, REG_MASK_LOCAL | REG_MASK_PC);
- 
-         block_write_data = NULL;
-+
-+	codegen_allocator_clean_blocks(block->head_mem_block);
- //fatal("block_pos=%i\n", block_pos);
- 	asm("vmrs %0, fpscr\n"
-                 : "=r" (cpu_state.old_fp_control)
 diff --git a/src/cpu_new/codegen_backend_arm_ops.c b/src/cpu_new/codegen_backend_arm_ops.c
-index 1b2ef28f..7c0cb746 100644
+index 90c095ba..65e48cd4 100644
 --- a/src/cpu_new/codegen_backend_arm_ops.c
 +++ b/src/cpu_new/codegen_backend_arm_ops.c
 @@ -1,4 +1,4 @@
@@ -96,9 +71,9 @@ index 1b2ef28f..7c0cb746 100644
 +#if defined __ARM_EABI__ || defined _ARM_
  
  #include <stdint.h>
- #include "../86box.h"
+ #include <86box/86box.h>
 diff --git a/src/cpu_new/codegen_backend_arm_uops.c b/src/cpu_new/codegen_backend_arm_uops.c
-index 1dbaab40..aff0d15b 100644
+index 3f16554c..fd17e78d 100644
 --- a/src/cpu_new/codegen_backend_arm_uops.c
 +++ b/src/cpu_new/codegen_backend_arm_uops.c
 @@ -1,4 +1,4 @@
@@ -108,34 +83,21 @@ index 1dbaab40..aff0d15b 100644
  #include <math.h>
  #include <stdint.h>
 diff --git a/src/win/Makefile_ndr.mingw b/src/win/Makefile_ndr.mingw
-index ca6e1371..e59a8a24 100644
+index f507dc3b..0588e5f7 100644
 --- a/src/win/Makefile_ndr.mingw
 +++ b/src/win/Makefile_ndr.mingw
-@@ -209,12 +209,6 @@ MUNT		:= y
- endif
- ifndef DYNAREC
-  DYNAREC		:= y
-- ifeq ($(ARM), y)
--  DYNAREC		:= n
-- endif
-- ifeq ($(ARM64), y)
--  DYNAREC   := n
-- endif
- endif
- ifndef DISCORD
-  DISCORD	:= y
-@@ -366,6 +360,11 @@ ifeq ($(DYNAREC), y)
+@@ -374,6 +374,11 @@ ifeq ($(DYNAREC), y)
  ifeq ($(X64), y)
  PLATCG		:= codegen_backend_x86-64.o codegen_backend_x86-64_ops.o codegen_backend_x86-64_ops_sse.o \
  		   codegen_backend_x86-64_uops.o
 +else ifeq ($(ARM64), y)
-+PLATCG		:= codegen_backend_arm64.o codegen_backend_arm64_ops.o codegen_backend_arm64_uops.o \
-+		   codegen_backend_arm64_imm.o
++PLATCG      := codegen_backend_arm64.o codegen_backend_arm64_ops.o codegen_backend_arm64_uops.o \
++            codegen_backend_arm64_imm.o
 +else ifeq ($(ARM), y)
-+PLATCG		:= codegen_backend_arm.o codegen_backend_arm_ops.o codegen_backend_arm_uops.o
++PLATCG      := codegen_backend_arm.o codegen_backend_arm_ops.o codegen_backend_arm_uops.o
  else
  PLATCG		:= codegen_backend_x86.o codegen_backend_x86_ops.o codegen_backend_x86_ops_fpu.o codegen_backend_x86_ops_sse.o \
  		   codegen_backend_x86_uops.o
 -- 
-2.21.0.windows.1
+2.17.1
 
