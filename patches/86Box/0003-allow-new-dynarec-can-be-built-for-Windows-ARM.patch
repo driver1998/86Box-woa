@@ -1,17 +1,17 @@
-From c1646b657ace83c12b5d555effc38835d6d71ff1 Mon Sep 17 00:00:00 2001
+From f1820ca3a29da9a6ebd8f1ca7068253d376dadbc Mon Sep 17 00:00:00 2001
 From: GH Cao <driver1998@foxmail.com>
 Date: Sat, 4 Apr 2020 20:12:22 +0800
 Subject: [PATCH 3/3] allow new dynarec can be built for Windows ARM
 
 ---
- src/cpu_new/codegen_allocator.c        | 2 +-
- src/cpu_new/codegen_allocator.h        | 2 +-
- src/cpu_new/codegen_backend.h          | 2 +-
- src/cpu_new/codegen_backend_arm.c      | 2 +-
- src/cpu_new/codegen_backend_arm_ops.c  | 2 +-
- src/cpu_new/codegen_backend_arm_uops.c | 2 +-
- src/win/Makefile_ndr.mingw             | 5 +++++
- 7 files changed, 11 insertions(+), 6 deletions(-)
+ src/cpu_new/codegen_allocator.c        |  2 +-
+ src/cpu_new/codegen_allocator.h        |  2 +-
+ src/cpu_new/codegen_backend.h          |  2 +-
+ src/cpu_new/codegen_backend_arm.c      |  2 +-
+ src/cpu_new/codegen_backend_arm_ops.c  |  2 +-
+ src/cpu_new/codegen_backend_arm_uops.c |  2 +-
+ src/win/Makefile_ndr.mingw             | 11 +++++------
+ 7 files changed, 11 insertions(+), 12 deletions(-)
 
 diff --git a/src/cpu_new/codegen_allocator.c b/src/cpu_new/codegen_allocator.c
 index e51cdd59..9f46a835 100644
@@ -83,10 +83,23 @@ index 3f16554c..fd17e78d 100644
  #include <math.h>
  #include <stdint.h>
 diff --git a/src/win/Makefile_ndr.mingw b/src/win/Makefile_ndr.mingw
-index f507dc3b..0588e5f7 100644
+index f507dc3b..d91cc1f0 100644
 --- a/src/win/Makefile_ndr.mingw
 +++ b/src/win/Makefile_ndr.mingw
-@@ -374,6 +374,11 @@ ifeq ($(DYNAREC), y)
+@@ -215,12 +215,6 @@ MUNT		:= y
+ endif
+ ifndef DYNAREC
+  DYNAREC		:= y
+- ifeq ($(ARM), y)
+-  DYNAREC		:= n
+- endif
+- ifeq ($(ARM64), y)
+-  DYNAREC   := n
+- endif
+ endif
+ ifndef DISCORD
+  DISCORD	:= y
+@@ -374,6 +368,11 @@ ifeq ($(DYNAREC), y)
  ifeq ($(X64), y)
  PLATCG		:= codegen_backend_x86-64.o codegen_backend_x86-64_ops.o codegen_backend_x86-64_ops_sse.o \
  		   codegen_backend_x86-64_uops.o
