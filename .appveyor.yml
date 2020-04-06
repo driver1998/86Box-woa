@@ -2,10 +2,11 @@ image: Ubuntu1804
 
 environment:
   matrix:
-    - ARCH: aarch64
     - ARCH: x86_64
-    - ARCH: armv7
     - ARCH: i686
+    - ARCH: aarch64
+    - ARCH: armv7
+    
   
 install:
   - sh: |-
