@@ -6,6 +6,7 @@ A reproducible recipe to build [86Box](https://github.com/86box/86box) (Emulator
 - Guest machines and add-in cards included in Regular build config
 - New dynarec (Experimental)
 - RawInput joystick support
+- SLiRP networking
 - ESC/P printer emulation
 
 # Known issues
