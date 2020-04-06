@@ -39,12 +39,6 @@ fi
 mkdir $PREFIX
 mkdir $PREFIX/include
 
-# Ghostscript headers
-# pushd $(find ghostscript-* -maxdepth 1 -type d | head -n 1)
-# mkdir $PREFIX/include/ghostscript
-# cp psi/iapi.h psi/ierrors.h base/gserrors.h $PREFIX/include/ghostscript/
-# popd
-
 # Winpcap headers
 pushd WpdPack/Include
 cp -R * $PREFIX/include
@@ -61,9 +55,12 @@ popd
 
 # libpng
 pushd $(find libpng-* -maxdepth 1 -type d | head -n 1)
-./configure --prefix=$PREFIX --host=$HOST || exit 1
+./configure --prefix=$PREFIX --host=$HOST --disable-static --enable-shared || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
+pushd $PREFIX/lib
+ln -s libpng.dll.a libpng.a
+popd
 popd
 
 # SDL2
@@ -73,9 +70,13 @@ aclocal
 autoconf
 ./configure --prefix=$PREFIX --host=$HOST --disable-video-opengl \
             --disable-video-opengles --disable-video-opengles1 \
-            --disable-video-opengles2 --disable-video-vulkan || exit 1
+            --disable-video-opengles2 --disable-video-vulkan \
+            --disable-static --enable-shared || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
+pushd $PREFIX/lib
+ln -s libSDL2.dll.a libSDL2.a
+popd
 popd
 
 # openal-soft
@@ -94,7 +95,7 @@ popd
 
 # freetype
 pushd $(find freetype-* -maxdepth 1 -type d | head -n 1)
-./configure --prefix=$PREFIX --host=$HOST || exit 1
+./configure --prefix=$PREFIX --host=$HOST --disable-static --enable-shared || exit 1
 make -j $(nproc) || exit 1
 make install     || exit 1
 popd
@@ -108,10 +109,10 @@ export CPPFLAGS=$CFLAGS
 pushd 86box
 for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
 cd src
-if [ $ARCH == "i686"    ]; then _86BOX_ARGS="OPTIM=y DINPUT=n"         ; fi
-if [ $ARCH == "x86_64"  ]; then _86BOX_ARGS="OPTIM=y DINPUT=n X64=y"   ; fi
-if [ $ARCH == "armv7"   ]; then _86BOX_ARGS="OPTIM=y DINPUT=n ARM=y"   ; fi
-if [ $ARCH == "aarch64" ]; then _86BOX_ARGS="OPTIM=y DINPUT=n ARM64=y" ; fi
+if [ $ARCH == "x86_64"  ]; then _86BOX_ARGS="X64=y"   ; fi
+if [ $ARCH == "armv7"   ]; then _86BOX_ARGS="ARM=y"   ; fi
+if [ $ARCH == "aarch64" ]; then _86BOX_ARGS="ARM64=y" ; fi
+_86BOX_ARGS="DINPUT=n $_86BOX_ARGS WINDRES=$HOST-windres STRIP=$HOST-strip"
 make -f win/Makefile_ndr.mingw $_86BOX_ARGS -j $(nproc) || exit 1
 cp 86Box.exe pcap_if.exe $PREFIX/bin
 popd
@@ -120,6 +121,7 @@ BIN="86box/src/86Box.exe                \
      86box/src/pcap_if.exe              \
      $PREFIX/bin/OpenAL32.dll           \
      $PREFIX/bin/libfreetype-6.dll      \
+     $PREFIX/bin/SDL2.dll               \
      $PREFIX/bin/libpng16-16.dll        \
      $PREFIX/bin/zlib1.dll              \
      $MINGW_ROOT/$HOST/bin/libc++.dll   \
