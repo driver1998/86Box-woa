@@ -10,6 +10,6 @@ A reproducible recipe to build [86Box](https://github.com/86box/86box) (Emulator
 - ESC/P printer emulation
 
 # Known issues
-- Fluidsynth, GhostScript (for PostScript printer emulation) and pcap DLLs are not available.
-- Dynarec is not as stable as official x86/x64 builds.
+- Fluidsynth, GhostScript (for PostScript printer emulation) binaries are not available.
+- New dynarec on non x86 platforms might be broken
 
