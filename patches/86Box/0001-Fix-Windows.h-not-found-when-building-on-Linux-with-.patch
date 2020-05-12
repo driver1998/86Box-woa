@@ -1,0 +1,32 @@
+From e649958fbc67e1a5cd2ceb769a5c849150b1dc7b Mon Sep 17 00:00:00 2001
+From: GH Cao <driver1998@foxmail.com>
+Date: Wed, 13 May 2020 01:39:57 +0800
+Subject: [PATCH] Fix Windows.h not found when building on Linux with MinGW
+
+---
+ src/win/win_media_menu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/win/win_media_menu.c b/src/win/win_media_menu.c
+index 6ff7d06e..fe3d6153 100644
+--- a/src/win/win_media_menu.c
++++ b/src/win/win_media_menu.c
+@@ -2,7 +2,7 @@
+ #include <stdint.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+-#include <Windows.h>
++#include <windows.h>
+ #include <86box/86box.h>
+ #include <86box/cdrom.h>
+ #include <86box/config.h>
+@@ -526,4 +526,4 @@ HMENU
+ media_menu_get_mo(int id)
+ {
+     return menus[MO_FIRST + id];
+-}
+\ No newline at end of file
++}
+-- 
+2.17.1
+
