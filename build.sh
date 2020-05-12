@@ -109,11 +109,11 @@ export CPPFLAGS=$CFLAGS
 pushd 86box
 for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
 cd src
-if [ $ARCH == "x86_64"  ]; then _86BOX_ARGS="X64=y"   ; fi
-if [ $ARCH == "armv7"   ]; then _86BOX_ARGS="ARM=y"   ; fi
-if [ $ARCH == "aarch64" ]; then _86BOX_ARGS="ARM64=y" ; fi
-_86BOX_ARGS="OPTIM=y DINPUT=n $_86BOX_ARGS WINDRES=$HOST-windres STRIP=$HOST-strip"
-make -f win/Makefile_ndr.mingw $_86BOX_ARGS -j $(nproc) || exit 1
+if [ $ARCH == "x86_64"  ]; then PLAT='X64=y'   ; fi
+if [ $ARCH == "armv7"   ]; then PLAT="ARM=y"   ; fi
+if [ $ARCH == "aarch64" ]; then PLAT="ARM64=y" ; fi
+ARGS="$PLAT DINPUT=n WINDRES=$HOST-windres STRIP=$HOST-strip"
+make -f win/Makefile_ndr.mingw $ARGS -j $(nproc) || exit 1
 cp 86Box.exe pcap_if.exe $PREFIX/bin
 popd
 
@@ -135,3 +135,4 @@ mv libfreetype-6.dll freetype.dll
 $HOST-strip *.exe *.dll
 zip ../86Box.zip *
 popd
+
