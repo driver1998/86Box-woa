@@ -1,0 +1,25 @@
+From 2c29f63a9d40bd09bdf16a90199686ef38dceb17 Mon Sep 17 00:00:00 2001
+From: GH Cao <driver1998@foxmail.com>
+Date: Thu, 11 Jun 2020 02:42:58 +0800
+Subject: [PATCH] snd_gus: Fix filename case for building on Linux.
+
+---
+ src/sound/snd_gus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/sound/snd_gus.c b/src/sound/snd_gus.c
+index 19974cf6..966044b7 100644
+--- a/src/sound/snd_gus.c
++++ b/src/sound/snd_gus.c
+@@ -14,7 +14,7 @@
+ #include <86box/device.h>
+ #include <86box/sound.h>
+ #include <86box/midi.h>
+-#include <86Box/snd_ad1848.h>
++#include <86box/snd_ad1848.h>
+ #include <math.h>
+ 
+ enum
+-- 
+2.17.1
+
