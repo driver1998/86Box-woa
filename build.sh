@@ -114,7 +114,6 @@ if [ $ARCH == "armv7"   ]; then PLAT="ARM=y"   ; fi
 if [ $ARCH == "aarch64" ]; then PLAT="ARM64=y" ; fi
 ARGS="$PLAT DINPUT=n WINDRES=$HOST-windres STRIP=$HOST-strip"
 make -f win/Makefile_ndr.mingw $ARGS -j $(nproc) || exit 1
-cp 86Box.exe pcap_if.exe $PREFIX/bin
 popd
 
 BIN="86box/src/86Box.exe                \
