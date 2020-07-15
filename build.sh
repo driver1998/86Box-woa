@@ -113,7 +113,7 @@ if [ $ARCH == "x86_64"  ]; then PLAT='X64=y'   ; fi
 if [ $ARCH == "armv7"   ]; then PLAT="ARM=y"   ; fi
 if [ $ARCH == "aarch64" ]; then PLAT="ARM64=y" ; fi
 ARGS="$PLAT DINPUT=n WINDRES=$HOST-windres STRIP=$HOST-strip"
-make -f win/Makefile_ndr.mingw $ARGS -j $(nproc) || exit 1
+make -f win/Makefile.mingw $ARGS -j $(nproc) || exit 1
 popd
 
 BIN="86box/src/86Box.exe                \
