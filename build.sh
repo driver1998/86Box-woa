@@ -107,7 +107,7 @@ export CXXFLAGS=$CFLAGS
 export CPPFLAGS=$CFLAGS
 
 pushd 86box
-for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
+# for p in ../patches/86Box/*.patch; do patch -p1 < "$p"; done
 cd src
 if [ $ARCH == "x86_64"  ]; then PLAT='X64=y'   ; fi
 if [ $ARCH == "armv7"   ]; then PLAT="ARM=y"   ; fi
