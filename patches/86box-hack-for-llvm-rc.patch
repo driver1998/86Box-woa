@@ -1,0 +1,18 @@
+diff --git a/src/win/86Box.rc b/src/win/86Box.rc
+index 845b6584..5af9b9b1 100644
+--- a/src/win/86Box.rc
++++ b/src/win/86Box.rc
+@@ -993,12 +993,7 @@ BEGIN
+     IDS_2126	"An emulator of old computers\n\nAuthors: Sarah Walker, Miran Grca, Fred N. van Kempen (waltje), SA1988, MoochMcGee, reenigne, leilei, JohnElliott, greatpsycho, and others.\n\nReleased under the GNU General Public License version 2. See LICENSE for more information."
+     IDS_2127	"OK"
+     IDS_2128	"Hardware not available"
+-#ifdef _WIN32
+-#define LIB_NAME_PCAP "WinPcap"
+-#else
+-#define LIB_NAME_PCAP "libpcap"
+-#endif
+-    IDS_2129	"Make sure " LIB_NAME_PCAP " is installed and that you are on a " LIB_NAME_PCAP "-compatible network connection."
++    IDS_2129	"Make sure WinPcap is installed and that you are on a WinPcap-compatible network connection."
+     IDS_2130	"Invalid configuration"
+ #ifdef _WIN32
+ #define LIB_NAME_FREETYPE "freetype.dll"
