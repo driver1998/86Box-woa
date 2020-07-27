@@ -1,6 +1,6 @@
 
 export HOST=$ARCH-w64-mingw32
-export MINGW_ROOT=/opt/$(find llvm-mingw* -maxdepth 1 -type d | head -n 1)
+export MINGW_ROOT=$(find /opt/llvm-mingw* -maxdepth 1 -type d | head -n 1)
 export PREFIX=/opt/$HOST
 export PATH=$PATH:$MINGW_ROOT/bin:$PREFIX/bin
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX/lib/pkgconfig
