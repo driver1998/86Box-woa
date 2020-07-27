@@ -1,0 +1,46 @@
+image: Ubuntu1804
+
+environment:
+  matrix:
+    - ARCH: x86_64
+    - ARCH: aarch64
+    - ARCH: i686
+    - ARCH: armv7
+    
+  
+install:
+  - sh: |-
+      curl -o llvm-mingw.tar.xz -L https://github.com/mstorsjo/llvm-mingw/releases/download/20191230/llvm-mingw-20191230-ubuntu-16.04.tar.xz
+      sudo tar xf llvm-mingw.tar.xz -C /opt/ || exit 1
+
+      curl -o buildenv.tar.xz -L https://github.com/driver1998/buildenv/releases/download/v0.26/buildenv-$ARCH.tar.xz
+      sudo tar xf buildenv.tar.xz -C /opt/ || exit 1
+
+      curl -o wpdpack.zip -L https://www.winpcap.org/install/bin/WpdPack_4_1_2.zip
+      unzip   wpdpack.zip || exit 1
+
+      git clone https://github.com/86box/86box --depth 1
+      chmod +x build.sh
+      
+build_script:
+  sh: ./build.sh
+
+after_build:
+  sh: |-
+    pushd 86box
+    COMMIT=$(git describe --always)
+    popd
+    mv 86Box.zip 86Box-$ARCH-$COMMIT.zip
+
+artifacts:
+  - path: '86Box*.zip'
+    name: 86Box
+
+# deploy:
+#  - release: $(APPVEYOR_BUILD_NUMBER)
+#    description: 86Box $(APPVEYOR_BUILD_NUMBER)
+#    provider: GitHub
+#    artifact: /86Box.*\.zip/
+#    auth_token:
+#      secure: H8HAtJ5SrLHk1gW1eYZFcjtekn1rIW7a8GJsNC6Nftcql8wE0seZRtYqMnFoQLnr
+#    draft: true
