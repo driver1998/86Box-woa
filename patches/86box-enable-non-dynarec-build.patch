@@ -1,18 +1,20 @@
 diff --git a/src/codegen/codegen.h b/src/codegen/codegen.h
-index d3898b53..72581131 100644
+index d3898b53..1e4f5c96 100644
 --- a/src/codegen/codegen.h
 +++ b/src/codegen/codegen.h
-@@ -40,6 +40,8 @@
+@@ -40,6 +40,7 @@
  #include <86box/mem.h>
  #include "x86_ops.h"
  
 +#ifdef USE_DYNAREC
-+
  #ifdef __amd64__
  #include "codegen_x86-64.h"
  #elif defined i386 || defined __i386 || defined __i386__ || defined _X86_ || defined _M_IX86 || defined _M_X64
-@@ -404,3 +406,4 @@ extern int codegen_reg_loaded[8];
- extern int codegen_in_recompile;
- 
+@@ -47,6 +48,7 @@
+ #else
+ #error Dynamic recompiler not implemented on your platform
  #endif
 +#endif
+ 
+ /*Handling self-modifying code (of which there is a lot on x86) :
+ 
