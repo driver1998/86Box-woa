@@ -1,5 +1,5 @@
 diff --git a/src/codegen/codegen.h b/src/codegen/codegen.h
-index d3898b53..1e4f5c96 100644
+index d3898b53..c9f33068 100644
 --- a/src/codegen/codegen.h
 +++ b/src/codegen/codegen.h
 @@ -40,6 +40,7 @@
@@ -18,3 +18,18 @@ index d3898b53..1e4f5c96 100644
  
  /*Handling self-modifying code (of which there is a lot on x86) :
  
+@@ -342,6 +344,7 @@ extern int block_pos;
+ 
+ #define CPU_BLOCK_END() cpu_block_end = 1
+ 
++#ifdef USE_DYNAREC
+ static inline void addbyte(uint8_t val)
+ {
+         codeblock[block_current].data[block_pos++] = val;
+@@ -402,5 +405,5 @@ extern int codegen_fpu_loaded_iq[8];
+ extern int codegen_reg_loaded[8];
+ 
+ extern int codegen_in_recompile;
+-
++#endif
+ #endif
